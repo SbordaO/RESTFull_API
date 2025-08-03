@@ -4,14 +4,14 @@ const puerto = 8080;
 
 app.use(express.json());
 
-const usuariosRoutes = require('./routes/usuarios');
-const librosRoutes = require('./routes/libros');
-const prestamosRoutes = require('./routes/prestamos');
-const reseñasRoutes = require('./routes/reseñas');
+const usuariosRoutes = require('./src/routes/usuarios.routes');
+const librosRoutes = require('./src/routes/libros.routes');
+const prestamosRoutes = require('./src/routes/prestamos.routes');
+const reseñasRoutes = require('./src/routes/reseñas.routes');
 
 app.use('/libros', librosRoutes);
 app.use('/prestamos', prestamosRoutes);
-app.use('/resenias', reseñasRoutes);
+app.use('/reseñas', reseñasRoutes);
 app.use('/usuarios', usuariosRoutes);
 
 app.listen(puerto, () => {
