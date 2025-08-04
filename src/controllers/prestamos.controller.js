@@ -1,4 +1,4 @@
-const prestamoModel = require('../model/prestamos.model');
+const prestamoModel = require('../models/prestamos.model');
 
 const getPrestamos = async (req, res) => {
   const prestamos = await prestamoModel.obtenerTodos();

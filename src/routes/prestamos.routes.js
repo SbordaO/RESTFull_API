@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const prestamoController = require('../controller/prestamos.controller');
+const prestamoController = require('../controllers/prestamos.controller');
 
 router.get('/', prestamoController.getPrestamos);
 router.get('/:id', prestamoController.getPrestamoPorId);

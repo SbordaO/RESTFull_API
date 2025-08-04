@@ -1,36 +1,33 @@
-let usuarios = [
-  { id: 1, nombre: 'Juan', email: 'juan@mail.com' },
-  { id: 2, nombre: 'Ana', email: 'ana@mail.com' }
-];
+const pool = require('../config/db');
 
 const obtenerTodos = async () => {
-  return usuarios;
+  const [rows] = await pool.query('SELECT * FROM usuarios');
+  return rows;
 };
 
 const obtenerPorId = async (id) => {
-  return usuarios.find(u => u.id === id);
+  const [rows] = await pool.query('SELECT * FROM usuarios WHERE id = ?', [id]);
+  return rows[0];
 };
 
 const crear = async (data) => {
-  const nuevo = {
-    id: usuarios.length + 1,
-    nombre: data.nombre,
-    email: data.email
-  };
-  usuarios.push(nuevo);
-  return nuevo;
+  const [result] = await pool.query(
+    'INSERT INTO usuarios (nombre, email) VALUES (?, ?)',
+    [data.nombre, data.email]
+  );
+  return { id: result.insertId, ...data };
 };
 
 const actualizar = async (id, data) => {
-  const usuario = usuarios.find(u => u.id === id);
-  if (!usuario) return null;
-  usuario.nombre = data.nombre || usuario.nombre;
-  usuario.email = data.email || usuario.email;
-  return usuario;
+  await pool.query(
+    'UPDATE usuarios SET nombre = ?, email = ? WHERE id = ?',
+    [data.nombre, data.email, id]
+  );
+  return { id, ...data };
 };
 
 const eliminar = async (id) => {
-  usuarios = usuarios.filter(u => u.id !== id);
+  await pool.query('DELETE FROM usuarios WHERE id = ?', [id]);
 };
 
 module.exports = {

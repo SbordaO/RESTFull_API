@@ -1,32 +1,38 @@
-let resenias = [
-  { id: 1, id_libro: 2, contenido: "Excelente libro", puntuacion: 5 }
-];
+const pool = require('../config/db');
 
-const obtenerTodas = async () => resenias;
-const obtenerPorId = async (id) => resenias.find(r => r.id === id);
-const obtenerPorLibro = async (id_libro) => resenias.filter(r => r.id_libro === id_libro);
+const obtenerTodas = async () => {
+  const [rows] = await pool.query('SELECT * FROM reseñas');
+  return rows;
+};
+
+const obtenerPorId = async (id) => {
+  const [rows] = await pool.query('SELECT * FROM reseñas WHERE id = ?', [id]);
+  return rows[0];
+};
+
+const obtenerPorLibro = async (id_libro) => {
+  const [rows] = await pool.query('SELECT * FROM reseñas WHERE id_libro = ?', [id_libro]);
+  return rows;
+};
 
 const crear = async (data) => {
-  const nueva = {
-    id: resenias.length + 1,
-    id_libro: data.id_libro,
-    contenido: data.contenido,
-    puntuacion: data.puntuacion
-  };
-  resenias.push(nueva);
-  return nueva;
+  const [result] = await pool.query(
+    'INSERT INTO reseñas (id_libro, contenido, puntuacion) VALUES (?, ?, ?)',
+    [data.id_libro, data.contenido, data.puntuacion]
+  );
+  return { id: result.insertId, ...data };
 };
 
 const actualizar = async (id, data) => {
-  const resenia = resenias.find(r => r.id === id);
-  if (!resenia) return null;
-  resenia.contenido = data.contenido || resenia.contenido;
-  resenia.puntuacion = data.puntuacion || resenia.puntuacion;
-  return resenia;
+  await pool.query(
+    'UPDATE reseñas SET contenido = ?, puntuacion = ? WHERE id = ?',
+    [data.contenido, data.puntuacion, id]
+  );
+  return { id, ...data };
 };
 
 const eliminar = async (id) => {
-  resenias = resenias.filter(r => r.id !== id);
+  await pool.query('DELETE FROM reseñas WHERE id = ?', [id]);
 };
 
 module.exports = {

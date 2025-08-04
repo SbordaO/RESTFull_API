@@ -1,4 +1,4 @@
-const reseniaModel = require('../model/reseñas.model');
+const reseniaModel = require('../models/reseñas.model');
 
 const getResenias = async (req, res) => {
   const resenias = await reseniaModel.obtenerTodas();

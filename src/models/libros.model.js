@@ -1,31 +1,41 @@
-let libros = [
-  { id: 1, titulo: '1984', autor: 'George Orwell', existencia: 4 },
-  { id: 2, titulo: 'Dune', autor: 'Frank Herbert', existencia: 2 }
-];
+const pool = require('../config/db');
 
-const obtenerTodos = async () => libros;
-const obtenerPorId = async (id) => libros.find(l => l.id === id);
+const obtenerTodos = async () => {
+  const [rows] = await pool.query('SELECT * FROM libros');
+  return rows;
+};
+
+const obtenerPorId = async (id) => {
+  const [rows] = await pool.query('SELECT * FROM libros WHERE id = ?', [id]);
+  return rows[0];
+};
+
 const crear = async (data) => {
-  const nuevo = { id: libros.length + 1, ...data };
-  libros.push(nuevo);
-  return nuevo;
+  const [result] = await pool.query(
+    'INSERT INTO libros (titulo, autor, existencia) VALUES (?, ?, ?)',
+    [data.titulo, data.autor, data.existencia]
+  );
+  return { id: result.insertId, ...data };
 };
+
 const actualizar = async (id, data) => {
-  const libro = libros.find(l => l.id === id);
-  if (!libro) return null;
-  libro.titulo = data.titulo || libro.titulo;
-  libro.autor = data.autor || libro.autor;
-  libro.existencia = data.existencia || libro.existencia;
-  return libro;
+  await pool.query(
+    'UPDATE libros SET titulo = ?, autor = ?, existencia = ? WHERE id = ?',
+    [data.titulo, data.autor, data.existencia, id]
+  );
+  return { id, ...data };
 };
+
 const actualizarExistencia = async (id, existencia) => {
-  const libro = libros.find(l => l.id === id);
-  if (!libro) return null;
-  libro.existencia = existencia;
-  return libro;
+  await pool.query(
+    'UPDATE libros SET existencia = ? WHERE id = ?',
+    [existencia, id]
+  );
+  return { id, existencia };
 };
+
 const eliminar = async (id) => {
-  libros = libros.filter(l => l.id !== id);
+  await pool.query('DELETE FROM libros WHERE id = ?', [id]);
 };
 
 module.exports = {

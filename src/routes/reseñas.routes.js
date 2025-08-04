@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const reseniaController = require('../controller/reseñas.controller');
+const reseniaController = require('../controllers/reseñas.controller');
 
 router.get('/', reseniaController.getResenias);
 router.get('/:id', reseniaController.getReseniaPorId);

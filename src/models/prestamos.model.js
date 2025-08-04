@@ -1,32 +1,33 @@
-let prestamos = [
-  { id: 1, id_usuario: 1, id_libro: 2, fecha_prestamo: "2025-08-01", fecha_devolucion: "2025-08-10" }
-];
+const pool = require('../config/db');
 
-const obtenerTodos = async () => prestamos;
-const obtenerPorId = async (id) => prestamos.find(p => p.id === id);
+const obtenerTodos = async () => {
+  const [rows] = await pool.query('SELECT * FROM prestamos');
+  return rows;
+};
+
+const obtenerPorId = async (id) => {
+  const [rows] = await pool.query('SELECT * FROM prestamos WHERE id = ?', [id]);
+  return rows[0];
+};
 
 const crear = async (data) => {
-  const nuevo = {
-    id: prestamos.length + 1,
-    id_usuario: data.id_usuario,
-    id_libro: data.id_libro,
-    fecha_prestamo: data.fecha_prestamo,
-    fecha_devolucion: data.fecha_devolucion
-  };
-  prestamos.push(nuevo);
-  return nuevo;
+  const [result] = await pool.query(
+    'INSERT INTO prestamos (id_usuario, id_libro, fecha_prestamo, fecha_devolucion) VALUES (?, ?, ?, ?)',
+    [data.id_usuario, data.id_libro, data.fecha_prestamo, data.fecha_devolucion]
+  );
+  return { id: result.insertId, ...data };
 };
 
 const actualizar = async (id, data) => {
-  const prestamo = prestamos.find(p => p.id === id);
-  if (!prestamo) return null;
-  prestamo.fecha_prestamo = data.fecha_prestamo || prestamo.fecha_prestamo;
-  prestamo.fecha_devolucion = data.fecha_devolucion || prestamo.fecha_devolucion;
-  return prestamo;
+  await pool.query(
+    'UPDATE prestamos SET fecha_prestamo = ?, fecha_devolucion = ? WHERE id = ?',
+    [data.fecha_prestamo, data.fecha_devolucion, id]
+  );
+  return { id, ...data };
 };
 
 const eliminar = async (id) => {
-  prestamos = prestamos.filter(p => p.id !== id);
+  await pool.query('DELETE FROM prestamos WHERE id = ?', [id]);
 };
 
 module.exports = {
