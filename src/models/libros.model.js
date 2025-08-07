@@ -1,41 +1,42 @@
 const pool = require('../config/db');
 
 const obtenerTodos = async () => {
-  const [rows] = await pool.query('SELECT * FROM libros');
+  console.log("DEBUG: Ejecutando obtenerTodos en libros.model.js");
+  const [rows] = await pool.query('SELECT * FROM libro');
   return rows;
 };
 
 const obtenerPorId = async (id) => {
-  const [rows] = await pool.query('SELECT * FROM libros WHERE id = ?', [id]);
+  const [rows] = await pool.query('SELECT * FROM libro WHERE id_libro = ?', [id]);
   return rows[0];
 };
 
 const crear = async (data) => {
   const [result] = await pool.query(
-    'INSERT INTO libros (titulo, autor, existencia) VALUES (?, ?, ?)',
-    [data.titulo, data.autor, data.existencia]
+    'INSERT INTO libro (titulo, autor, editorial, anio_publicacion, genero, existencias) VALUES (?, ?, ?, ?, ?, ?)',
+    [data.titulo, data.autor, data.editorial, data.anio_publicacion, data.genero, data.existencias]
   );
-  return { id: result.insertId, ...data };
+  return { id_libro: result.insertId, ...data };
 };
 
 const actualizar = async (id, data) => {
   await pool.query(
-    'UPDATE libros SET titulo = ?, autor = ?, existencia = ? WHERE id = ?',
-    [data.titulo, data.autor, data.existencia, id]
+    'UPDATE libro SET titulo = ?, autor = ?, editorial = ?, anio_publicacion = ?, genero = ?, existencias = ? WHERE id_libro = ?',
+    [data.titulo, data.autor, data.editorial, data.anio_publicacion, data.genero, data.existencias, id]
   );
-  return { id, ...data };
+  return { id_libro: id, ...data };
 };
 
 const actualizarExistencia = async (id, existencia) => {
   await pool.query(
-    'UPDATE libros SET existencia = ? WHERE id = ?',
+    'UPDATE libro SET existencias = ? WHERE id_libro = ?',
     [existencia, id]
   );
-  return { id, existencia };
+  return { id_libro: id, existencia };
 };
 
 const eliminar = async (id) => {
-  await pool.query('DELETE FROM libros WHERE id = ?', [id]);
+  await pool.query('DELETE FROM libro WHERE id_libro = ?', [id]);
 };
 
 module.exports = {
